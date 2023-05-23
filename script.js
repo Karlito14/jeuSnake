@@ -3,10 +3,11 @@ window.onload = () => {
     const canvas = document.createElement('canvas');
     // Je récupère le contexte du canvas et je dessine en 2D
     const context = canvas.getContext('2d');
-    const delay = 100;
+    const delay = 1000;
     const canvasWidth = 900;
     const canvasHeight = 600;
     const blockSize = 30;
+    let applee;
 
     const init = () => {
         canvas.width = canvasWidth;
@@ -14,14 +15,16 @@ window.onload = () => {
         canvas.style.border = '1px solid';
         document.body.appendChild(canvas);
         snakee = new Snake([[6,4], [5,4], [4,4]], 'right');
-        mooveCanvas();
+        applee = new Apple([10,10]);
+        RefreshCanvas();
     };
 
-    const mooveCanvas = () => {
+    const RefreshCanvas = () => {
         context.clearRect(0, 0, canvas.width, canvas.height)
         snakee.draw();
         snakee.advance();
-        setTimeout(mooveCanvas, delay);
+        applee.draw();
+        setTimeout(RefreshCanvas, delay);
     }
 
     const drawBlock = (context, position) => {
@@ -81,6 +84,21 @@ window.onload = () => {
             if(allowedDirections.indexOf(newDirection) !== -1) {
                 this.direction = newDirection;
             }
+        }
+    }
+
+    function Apple (position) {
+        this.position = position;
+        this.draw = function () {
+            context.save();
+            context.fillStyle = '#33cc33';
+            context.beginPath();
+            const radius = blockSize / 2 ;
+            const xCoord = position[0] * blockSize + radius;
+            const yCoord = position[1] * blockSize + radius;
+            context.arc(xCoord, yCoord, radius, Math.PI * 2, false);
+            context.fill();
+            context.restore();
         }
     }
 
