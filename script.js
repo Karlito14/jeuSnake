@@ -1,19 +1,19 @@
+let snakee;
 window.onload = () => {
     const canvas = document.createElement('canvas');
     // Je récupère le contexte du canvas et je dessine en 2D
     const context = canvas.getContext('2d');
-    const delay = 200;
+    const delay = 100;
     const canvasWidth = 900;
     const canvasHeight = 600;
     const blockSize = 30;
-    let snakee;
 
     const init = () => {
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
         canvas.style.border = '1px solid';
         document.body.appendChild(canvas);
-        snakee = new Snake([[6,4], [5,4], [4,4]]);
+        snakee = new Snake([[6,4], [5,4], [4,4]], 'right');
         mooveCanvas();
     };
 
@@ -30,8 +30,9 @@ window.onload = () => {
         context.fillRect(xCoord, yCoord, blockSize, blockSize);
     }
 
-    function Snake(body) {
+    function Snake(body, direction) {
         this.body = body;
+        this.direction = direction;
         this.draw = function () {
             context.save();
             context.fillStyle= '#ff0000';
@@ -42,12 +43,68 @@ window.onload = () => {
         }
         this.advance = function () {
             const nextPosition = this.body[0].slice();
-            nextPosition[0]++;
+            switch(this.direction){
+                case 'left':
+                    nextPosition[0]--;
+                    break;
+                case 'up':
+                    nextPosition[1]--;
+                    break;
+                case 'down':
+                    nextPosition[1]++;
+                    break;
+                case 'right':
+                    nextPosition[0]++;
+                    break;
+                default :
+                    throw('Direction erronée');
+            };
             this.body.unshift(nextPosition);
             this.body.pop();
         }
+        this.setDirection = function (newDirection) {
+            let allowedDirections;
+            
+            switch(this.direction){
+                case 'left':
+                case 'right':
+                    allowedDirections = ['up', 'down'];
+                    break;
+                case 'down':
+                case 'up':
+                    allowedDirections = ['right', 'left'];
+                    break;
+                default :
+                    throw('Direction erronée');
+            };
+
+            if(allowedDirections.indexOf(newDirection) !== -1) {
+                this.direction = newDirection;
+            }
+        }
     }
 
-    init();
-    
+    init();  
+}
+
+document.onkeydown = function handleKeyDown (event) {
+    const key = event.key;
+    let newDirection;
+    switch(key){
+        case 'ArrowUp' : 
+            newDirection = 'up'
+            break;
+        case 'ArrowDown':
+            newDirection = 'down'
+            break;
+        case 'ArrowRight':
+            newDirection = 'right'
+            break;
+        case 'ArrowLeft':
+            newDirection = 'left'
+            break;
+        default :
+            return;
+    }
+    snakee.setDirection(newDirection);
 }
