@@ -7,6 +7,8 @@ window.onload = () => {
     const canvasWidth = 900;
     const canvasHeight = 600;
     const blockSize = 30;
+    const widthInBlock = canvasWidth / blockSize;
+    const heighInBlock = canvasHeight / blockSize;
     let applee;
 
     const init = () => {
@@ -20,11 +22,15 @@ window.onload = () => {
     };
 
     const RefreshCanvas = () => {
-        context.clearRect(0, 0, canvas.width, canvas.height)
-        snakee.draw();
         snakee.advance();
-        applee.draw();
-        setTimeout(RefreshCanvas, delay);
+        if(snakee.checkCollision()){
+            // GAME OVER
+        } else {
+            context.clearRect(0, 0, canvas.width, canvas.height)
+            snakee.draw();
+            applee.draw();
+            setTimeout(RefreshCanvas, delay);
+        }   
     }
 
     const drawBlock = (context, position) => {
@@ -43,7 +49,7 @@ window.onload = () => {
                 drawBlock(context, this.body[i]);
             }
             context.restore();
-        }
+        };
         this.advance = function () {
             const nextPosition = this.body[0].slice();
             switch(this.direction){
@@ -64,7 +70,7 @@ window.onload = () => {
             };
             this.body.unshift(nextPosition);
             this.body.pop();
-        }
+        };
         this.setDirection = function (newDirection) {
             let allowedDirections;
             
@@ -84,7 +90,33 @@ window.onload = () => {
             if(allowedDirections.indexOf(newDirection) !== -1) {
                 this.direction = newDirection;
             }
-        }
+        };
+        this.checkCollision = function() {
+            let wallCollision = false;
+            let snakeCollision = false;
+            const headSnake = this.body[0];
+            const restSnake = this.body.slice(1);
+            const headSnakeX = headSnake[0];
+            const headSnakeY = headSnake[1];
+            const minWallX = 0;
+            const minWallY = 0;
+            const maxWallX = widthInBlock - 1;
+            const maxWallY = heighInBlock - 1;
+            const isNotBetweenHorizontalWalls = headSnakeX < minWallX || headSnakeX > maxWallX;
+            const isNotBetweenVerticalWalls = headSnakeY < minWallY || headSnakeY > maxWallY;
+
+            if(isNotBetweenHorizontalWalls || isNotBetweenVerticalWalls) {
+                wallCollision = true;
+            }
+
+            for(let i = 0; i < restSnake; i++) {
+                if(headSnakeX === restSnake[i][0] && headSnakeY === restSnake[i][1]){
+                    snakeCollision = true;
+                }
+            }
+
+            return wallCollision || snakeCollision;
+        };
     }
 
     function Apple (position) {
