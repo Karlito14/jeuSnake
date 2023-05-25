@@ -1,4 +1,5 @@
 let snakee;
+let applee;
 window.onload = () => {
     const canvas = document.createElement('canvas');
     // Je récupère le contexte du canvas et je dessine en 2D
@@ -9,7 +10,19 @@ window.onload = () => {
     const blockSize = 30;
     const widthInBlock = canvasWidth / blockSize;
     const heighInBlock = canvasHeight / blockSize;
-    let applee;
+
+    const gameOver = () => {
+        context.save();
+        context.fillText('Game Over', 5, 15);
+        context.fillText('Appuyer sur \'Espace\' pour rejouer', 5, 30);
+        context.restore();
+    };
+
+    const restart = () => {
+        snakee = new Snake([[6,4], [5,4], [4,4]], 'right');
+        applee = new Apple([10,10]);
+        RefreshCanvas();
+    };
 
     const init = () => {
         canvas.width = canvasWidth;
@@ -24,7 +37,7 @@ window.onload = () => {
     const RefreshCanvas = () => {
         snakee.advance();
         if(snakee.checkCollision()){
-            // GAME OVER
+            gameOver();
         } else {
             if(snakee.isEatingApple(applee)) {
                 snakee.ateApple = true;
@@ -121,7 +134,7 @@ window.onload = () => {
                 wallCollision = true;
             }
 
-            for(let i = 0; i < restSnake; i++) {
+            for(let i = 0; i < restSnake.length; i++) {
                 if(headSnakeX === restSnake[i][0] && headSnakeY === restSnake[i][1]){
                     snakeCollision = true;
                 }
@@ -170,26 +183,30 @@ window.onload = () => {
     }
 
     init();  
+
+    document.onkeydown = function handleKeyDown (event) {
+        const key = event.key;
+        let newDirection;
+        switch(key){
+            case 'ArrowUp' : 
+                newDirection = 'up'
+                break;
+            case 'ArrowDown':
+                newDirection = 'down'
+                break;
+            case 'ArrowRight':
+                newDirection = 'right'
+                break;
+            case 'ArrowLeft':
+                newDirection = 'left'
+                break;
+            case ' ':
+                restart();
+                return;
+            default :
+                return;
+        }
+        snakee.setDirection(newDirection);
+    }
 }
 
-document.onkeydown = function handleKeyDown (event) {
-    const key = event.key;
-    let newDirection;
-    switch(key){
-        case 'ArrowUp' : 
-            newDirection = 'up'
-            break;
-        case 'ArrowDown':
-            newDirection = 'down'
-            break;
-        case 'ArrowRight':
-            newDirection = 'right'
-            break;
-        case 'ArrowLeft':
-            newDirection = 'left'
-            break;
-        default :
-            return;
-    }
-    snakee.setDirection(newDirection);
-}
