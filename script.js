@@ -3,7 +3,7 @@ window.onload = () => {
     const canvas = document.createElement('canvas');
     // Je récupère le contexte du canvas et je dessine en 2D
     const context = canvas.getContext('2d');
-    const delay = 1000;
+    const delay = 300;
     const canvasWidth = 900;
     const canvasHeight = 600;
     const blockSize = 30;
@@ -26,6 +26,13 @@ window.onload = () => {
         if(snakee.checkCollision()){
             // GAME OVER
         } else {
+            if(snakee.isEatingApple(applee)) {
+                snakee.ateApple = true;
+                do {
+                    applee.setNewPosition();
+                }
+                while(applee.isOnSnake(snakee));
+            }
             context.clearRect(0, 0, canvas.width, canvas.height)
             snakee.draw();
             applee.draw();
@@ -42,6 +49,7 @@ window.onload = () => {
     function Snake(body, direction) {
         this.body = body;
         this.direction = direction;
+        this.ateApple = false;
         this.draw = function () {
             context.save();
             context.fillStyle= '#ff0000';
@@ -69,7 +77,11 @@ window.onload = () => {
                     throw('Direction erronée');
             };
             this.body.unshift(nextPosition);
-            this.body.pop();
+            if(!this.ateApple) {
+                this.body.pop();
+            } else {
+                this.ateApple = false;
+            }
         };
         this.setDirection = function (newDirection) {
             let allowedDirections;
@@ -117,6 +129,14 @@ window.onload = () => {
 
             return wallCollision || snakeCollision;
         };
+        this.isEatingApple = function(apple) {
+            const headSnake = this.body[0];
+            if(headSnake[0] === apple.position[0] && headSnake[1] === apple.position[1]) {
+                return true;
+            } else {
+                return false;
+            }
+        };
     }
 
     function Apple (position) {
@@ -126,11 +146,26 @@ window.onload = () => {
             context.fillStyle = '#33cc33';
             context.beginPath();
             const radius = blockSize / 2 ;
-            const xCoord = position[0] * blockSize + radius;
-            const yCoord = position[1] * blockSize + radius;
+            const xCoord = this.position[0] * blockSize + radius;
+            const yCoord = this.position[1] * blockSize + radius;
             context.arc(xCoord, yCoord, radius, Math.PI * 2, false);
             context.fill();
             context.restore();
+        };
+        this.setNewPosition = function() {
+            const newX = Math.round(Math.random() * (widthInBlock - 1));
+            const newY = Math.round(Math.random() * (heighInBlock - 1));
+            this.position = [newX, newY];
+        };
+        this.isOnSnake = function(snake) {
+            let isOnSnake = false;
+
+            for(let i = 0; i < snake.body.length; i++) {
+                if(this.position[0] === snake.body[i][0] && this.position[1] === snake.body[i][1]){
+                    isOnSnake = true;
+                }
+            };
+            return isOnSnake;
         }
     }
 
