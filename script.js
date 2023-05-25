@@ -10,6 +10,7 @@ window.onload = () => {
     const blockSize = 30;
     const widthInBlock = canvasWidth / blockSize;
     const heighInBlock = canvasHeight / blockSize;
+    let score = 0;
 
     const gameOver = () => {
         context.save();
@@ -22,6 +23,12 @@ window.onload = () => {
         snakee = new Snake([[6,4], [5,4], [4,4]], 'right');
         applee = new Apple([10,10]);
         RefreshCanvas();
+    };
+
+    const drawScore = () => {
+        context.save();
+        context.fillText(score.toString(), 5, canvasHeight - 5)
+        context.restore();
     };
 
     const init = () => {
@@ -40,13 +47,15 @@ window.onload = () => {
             gameOver();
         } else {
             if(snakee.isEatingApple(applee)) {
+                score++;
                 snakee.ateApple = true;
                 do {
                     applee.setNewPosition();
                 }
                 while(applee.isOnSnake(snakee));
             }
-            context.clearRect(0, 0, canvas.width, canvas.height)
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            drawScore();
             snakee.draw();
             applee.draw();
             setTimeout(RefreshCanvas, delay);
