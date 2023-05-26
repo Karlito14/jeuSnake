@@ -4,51 +4,73 @@ window.onload = () => {
     const canvas = document.createElement('canvas');
     // Je récupère le contexte du canvas et je dessine en 2D
     const context = canvas.getContext('2d');
-    const delay = 300;
+    let delay = 150;
     const canvasWidth = 900;
     const canvasHeight = 600;
     const blockSize = 30;
     const widthInBlock = canvasWidth / blockSize;
     const heighInBlock = canvasHeight / blockSize;
+    const centreX = canvasWidth / 2;
+    const centreY = canvasHeight / 2;
     let score = 0;
+    let timeout;
 
     const gameOver = () => {
         context.save();
-        context.fillText('Game Over', 5, 15);
-        context.fillText('Appuyer sur \'Espace\' pour rejouer', 5, 30);
+        context.font = 'bold 70px sans-serif';
+        context.fillStyle = 'black';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText('Game Over', centreX, centreY - 180);
+        context.font = 'bold 30px sans-serif';
+        context.fillText('Appuyer sur \'Espace\' pour rejouer', centreX, centreY - 120);
         context.restore();
     };
 
-    const restart = () => {
+    const launch = () => {
         snakee = new Snake([[6,4], [5,4], [4,4]], 'right');
         applee = new Apple([10,10]);
+        clearTimeout(timeout);
         RefreshCanvas();
     };
 
     const drawScore = () => {
         context.save();
-        context.fillText(score.toString(), 5, canvasHeight - 5)
+        context.font = 'bold 200px sans-serif';
+        context.fillStyle = 'gray';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(score.toString(), centreX, centreY);
         context.restore();
     };
 
     const init = () => {
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
-        canvas.style.border = '1px solid';
+        canvas.style.border = '30px solid gray';
+        canvas.style.display = 'block';
+        canvas.style.margin = '50px auto';
+        canvas.style.backgroundColor = '#ddd';
         document.body.appendChild(canvas);
-        snakee = new Snake([[6,4], [5,4], [4,4]], 'right');
-        applee = new Apple([10,10]);
-        RefreshCanvas();
+        launch();
     };
+
+    const speed = () => {
+        delay /= 1.1;
+    }
 
     const RefreshCanvas = () => {
         snakee.advance();
         if(snakee.checkCollision()){
+            score = 0;
             gameOver();
         } else {
             if(snakee.isEatingApple(applee)) {
                 score++;
                 snakee.ateApple = true;
+                if (score % 5 === 0){
+                    speed();
+                }
                 do {
                     applee.setNewPosition();
                 }
@@ -58,7 +80,7 @@ window.onload = () => {
             drawScore();
             snakee.draw();
             applee.draw();
-            setTimeout(RefreshCanvas, delay);
+            timeout = setTimeout(RefreshCanvas, delay);
         }   
     }
 
@@ -198,19 +220,21 @@ window.onload = () => {
         let newDirection;
         switch(key){
             case 'ArrowUp' : 
-                newDirection = 'up'
+                event.preventDefault();
+                newDirection = 'up';
                 break;
             case 'ArrowDown':
-                newDirection = 'down'
+                event.preventDefault();
+                newDirection = 'down';
                 break;
             case 'ArrowRight':
-                newDirection = 'right'
+                newDirection = 'right';
                 break;
             case 'ArrowLeft':
-                newDirection = 'left'
+                newDirection = 'left';
                 break;
             case ' ':
-                restart();
+                launch();
                 return;
             default :
                 return;
