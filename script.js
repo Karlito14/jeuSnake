@@ -91,11 +91,14 @@ window.onload = () => {
         context.fillRect(xCoord, yCoord, blockSize, blockSize);
     }
 
-    function Snake(body, direction) {
-        this.body = body;
-        this.direction = direction;
-        this.ateApple = false;
-        this.draw = function () {
+    class Snake {
+
+        constructor(body, direction) {
+            this.body = body;
+            this.direction = direction;
+            this.ateApple = false;
+        }
+        draw () {
             context.save();
             context.fillStyle= '#ff0000';
             for(let i = 0; i < this.body.length; i++) {
@@ -103,7 +106,7 @@ window.onload = () => {
             }
             context.restore();
         };
-        this.advance = function () {
+        advance () {
             const nextPosition = this.body[0].slice();
             switch(this.direction){
                 case 'left':
@@ -128,7 +131,7 @@ window.onload = () => {
                 this.ateApple = false;
             }
         };
-        this.setDirection = function (newDirection) {
+        setDirection (newDirection) {
             let allowedDirections;
             
             switch(this.direction){
@@ -148,7 +151,7 @@ window.onload = () => {
                 this.direction = newDirection;
             }
         };
-        this.checkCollision = function() {
+        checkCollision () {
             let wallCollision = false;
             let snakeCollision = false;
             const headSnake = this.body[0];
@@ -174,19 +177,21 @@ window.onload = () => {
 
             return wallCollision || snakeCollision;
         };
-        this.isEatingApple = function(apple) {
+        isEatingApple (apple) {
             const headSnake = this.body[0];
             if(headSnake[0] === apple.position[0] && headSnake[1] === apple.position[1]) {
                 return true;
             } else {
                 return false;
             }
-        };
+        };     
     }
 
-    function Apple (position) {
-        this.position = position;
-        this.draw = function () {
+    class Apple {
+        constructor(position){
+            this.position = position;
+        }
+        draw () {
             context.save();
             context.fillStyle = '#33cc33';
             context.beginPath();
@@ -197,12 +202,12 @@ window.onload = () => {
             context.fill();
             context.restore();
         };
-        this.setNewPosition = function() {
+        setNewPosition () {
             const newX = Math.round(Math.random() * (widthInBlock - 1));
             const newY = Math.round(Math.random() * (heighInBlock - 1));
             this.position = [newX, newY];
         };
-        this.isOnSnake = function(snake) {
+        isOnSnake (snake) {
             let isOnSnake = false;
 
             for(let i = 0; i < snake.body.length; i++) {
@@ -212,11 +217,11 @@ window.onload = () => {
             };
             return isOnSnake;
         }
-    }
+    } 
 
     init();  
 
-    document.onkeydown = function handleKeyDown (event) {
+    document.onkeydown = (event) => {
         const key = event.key;
         let newDirection;
         switch(key){
