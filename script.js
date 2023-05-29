@@ -16,6 +16,7 @@ window.onload = () => {
     let timeout;
 
     const gameOver = () => {
+        delay = 150
         context.save();
         context.font = 'bold 70px sans-serif';
         context.fillStyle = 'black';
