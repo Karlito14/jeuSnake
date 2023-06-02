@@ -1,6 +1,5 @@
 export class Drawing {
     static gameOver(context, centreX, centreY, delay) {
-        delay = 150;
         context.save();
         context.font = 'bold 70px sans-serif';
         context.fillStyle = 'black';

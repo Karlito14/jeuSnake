@@ -47,7 +47,7 @@ export class Snake {
                 throw('Direction erronée');
         };
 
-        if(allowedDirections.indexOf(newDirection) !== -1) {
+        if(allowedDirections.includes(newDirection)) {
             this.direction = newDirection;
         }
     };

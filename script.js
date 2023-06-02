@@ -44,7 +44,8 @@ window.onload = () => {
         snakee.advance();
         if(snakee.checkCollision(widthInBlock, heighInBlock)){
             score = 0;
-            Drawing.gameOver(context, centreX, centreY, delay);
+            delay = 150;
+            Drawing.gameOver(context, centreX, centreY);
         } else {
             if(snakee.isEatingApple(applee)) {
                 score++;
